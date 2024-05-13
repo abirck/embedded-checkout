@@ -1,0 +1,9 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:fullscreen {
+  #root {
+    text-align: center;
+  }
+}
