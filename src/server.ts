@@ -9,14 +9,14 @@ import axios from "axios";
 // set things change. I should probably take in a customer ID from the frontend and add it to my debug panel
 // customer based in South Carolina (no tax): cus_OpvtuwflO7Q0ae
 // customer based in Washington (tax): cus_PDFSYCl9xNfGw0
-const CUSTOMER = "cus_OpvtuwflO7Q0ae";
-const PRICE = "price_1O9a0SGJIKv4skDIY9jaxHwp";
-const CONTINENTAL_SHIPPING = "shr_1PDsR1GJIKv4skDIj1Caqv5t";
-const AK_HI_SHIPPING = "shr_1PDsRkGJIKv4skDIWDs1Sj7w";
+const CUSTOMER = "cus_Q25yMf9LcFBa0x";
+const PRICE = "price_1P1WzdGIhO2YPQ6Aeh8fS1L0";
+const CONTINENTAL_SHIPPING = "shr_1PG6I6GIhO2YPQ6AmiVqCj3Z";
+const AK_HI_SHIPPING = "shr_1PG6IgGIhO2YPQ6AqqW52EHU";
 
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SK, {
-  apiVersion: "2024-04-10; custom_checkout_beta=v1",
+  apiVersion: "2022-11-15",
 });
 
 // Initialize express app
@@ -152,7 +152,7 @@ app.post(
 );
 
 const startServer = async () => {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 4000;
   app.listen(PORT, async () => {
     // other start-up stuff we don't want to do in tests
   });
