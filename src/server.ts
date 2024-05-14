@@ -9,21 +9,32 @@ import axios from "axios";
 // set things change. I should probably take in a customer ID from the frontend and add it to my debug panel
 // customer based in South Carolina (no tax): cus_OpvtuwflO7Q0ae
 // customer based in Washington (tax): cus_PDFSYCl9xNfGw0
-const CUSTOMER = "cus_OpvtuwflO7Q0ae";
-const PRICE = "price_1O9a0SGJIKv4skDIY9jaxHwp";
-const CONTINENTAL_SHIPPING = "shr_1PDsR1GJIKv4skDIj1Caqv5t";
-const AK_HI_SHIPPING = "shr_1PDsRkGJIKv4skDIWDs1Sj7w";
+const CUSTOMER = "cus_NGwDLRLPPm40KZ";
+const PRICE = "price_1PQGZ2KsACNmJCh6lzPyp6FY";
+const CONTINENTAL_SHIPPING = "shr_1PQYphKsACNmJCh61EkqxcaL";
+const AK_HI_SHIPPING = "shr_1PQYoIKsACNmJCh6VTYymg17";
+const EXPEDITED_SHIPPING = "shr_1PQYqOKsACNmJCh6upwQmocr";
 
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SK, {
-  apiVersion: "2024-04-10; custom_checkout_beta=v1",
+  apiVersion: "2022-11-15",
 });
 
 // Initialize express app
 const app = express();
 app.use(httpContext.middleware);
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(
+  express.static(path.join(__dirname, "../public"), {
+    etag: true, // Just being explicit about the default.
+    lastModified: true, // Just being explicit about the default.
+    setHeaders: (res, path) => {
+      if (process.env.NODE_ENV === "development") {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  })
+);
 
 app.use((req, res, next) => {
   const requestId = crypto.randomBytes(4).toString("hex");
@@ -60,6 +71,9 @@ app.post("/checkout", async (req: Request<{}>, res) => {
       {
         shipping_rate: CONTINENTAL_SHIPPING,
       },
+      {
+        shipping_rate: EXPEDITED_SHIPPING,
+      },
     ],
     line_items: [
       {
@@ -72,13 +86,13 @@ app.post("/checkout", async (req: Request<{}>, res) => {
       allowed_countries: ["US"],
     },
     ui_mode: "embedded",
-    redirect_on_completion: "never"
+    redirect_on_completion: "never",
   });
   console.log(
     `${requestId}:${new Date().toISOString()}: finished stripe.checkout.sessions.create() from merchant server`
   );
 
-  res.json({ clientSecret: session.client_secret });
+  res.json({ clientSecret: session.client_secret, sessionId: session.id });
 });
 
 const requestCheckoutSession = async (
@@ -102,7 +116,7 @@ const requestCheckoutSession = async (
 };
 
 app.post(
-  "/setAddress",
+  "/setShipping",
   async (
     req: Request<{
       sessionId: string;
@@ -126,6 +140,7 @@ app.post(
           : CONTINENTAL_SHIPPING;
       const params = new URLSearchParams();
       params.append("shipping_options[0][shipping_rate]", shippingRate);
+      params.append("shipping_options[1][shipping_rate]", EXPEDITED_SHIPPING);
       const cs = await axios.post(checkoutSessionUrl, params.toString(), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -152,7 +167,7 @@ app.post(
 );
 
 const startServer = async () => {
-  const PORT = process.env.PORT || 3000;
+  const PORT = process.env.PORT || 4000;
   app.listen(PORT, async () => {
     // other start-up stuff we don't want to do in tests
   });

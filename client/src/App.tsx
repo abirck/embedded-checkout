@@ -7,11 +7,11 @@ const App: React.FC = () => {
 
   return (
     <div className="mx-auto max-w-xs sm:max-w-xl lg:max-w-3xl py-12 sm:py-16 lg:py-24">
-      {
-        sessionComplete ?
-          (<SuccessPage />) : (<CheckoutPage setSessionComplete={() => setSessionComplete(true)} />)
-      }
-
+      {sessionComplete ? (
+        <SuccessPage />
+      ) : (
+        <CheckoutPage setSessionComplete={() => setSessionComplete(true)} />
+      )}
     </div>
   );
 };

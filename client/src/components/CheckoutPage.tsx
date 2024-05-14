@@ -3,7 +3,10 @@ import LoadingSpinner from "./LoadingSpinner";
 import CheckoutForm from "./CheckoutForm";
 import { fetchCheckout } from "../helpers/serverHelper";
 
-const CheckoutPage: React.FC<{ className?: string, setSessionComplete: () => void }> = ({ className, setSessionComplete }) => {
+const CheckoutPage: React.FC<{
+  className?: string;
+  setSessionComplete: () => void;
+}> = ({ className, setSessionComplete }) => {
   const [isFetching, setIsFetching] = useState(false);
   const [clientSecret, setClientSecret] = useState<string | null>(null);
 
@@ -33,7 +36,10 @@ const CheckoutPage: React.FC<{ className?: string, setSessionComplete: () => voi
     <div className={className}>
       <div className="pb-12 space-y-12">
         <div className="col-span-full">
-          <CheckoutForm clientSecret={clientSecret} setSessionComplete={setSessionComplete} />
+          <CheckoutForm
+            clientSecret={clientSecret}
+            setSessionComplete={setSessionComplete}
+          />
         </div>
       </div>
     </div>

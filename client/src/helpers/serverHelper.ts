@@ -1,5 +1,4 @@
-import { type Address } from "../components/AddressInput";
-import { type LineItem, type TaxAmount } from "../components/LineItems";
+import { type Address } from "../types/address";
 
 export const fetchCheckout = async (): Promise<{
   clientSecret: string;
@@ -43,19 +42,16 @@ export const fetchCheckout = async (): Promise<{
   throw new Error(`Unexpected status from /checkout: ${status}`);
 };
 
-export const setAddress = async ({
+export const setShipping = async ({
   sessionId,
   address,
-  abortController,
 }: {
   sessionId: string;
   address: Address;
-  abortController?: AbortController | null;
 }): Promise<{ ppage: any }> => {
   const startTime = performance.now();
   console.info(`${new Date().toISOString()}: starting POST /setAddress`);
-  const res = await fetch(`/setAddress`, {
-    ...(abortController && { signal: abortController.signal }),
+  const res = await fetch(`/setShipping`, {
     method: "POST",
     mode: "cors",
     cache: "no-cache",
@@ -70,7 +66,7 @@ export const setAddress = async ({
   const endTime = performance.now();
   const elapsedTime = endTime - startTime;
   console.info(
-    `${new Date().toISOString()}: finished POST /setAddress (${elapsedTime.toFixed(
+    `${new Date().toISOString()}: finished POST /setShipping (${elapsedTime.toFixed(
       3
     )} ms)`
   );

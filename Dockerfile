@@ -8,7 +8,7 @@ RUN apk update \
   && yarn install \
   && yarn build
 
-EXPOSE 3000
+EXPOSE 4000
 EXPOSE 80
 
 # TODO: Something to remove dev dependencies?
