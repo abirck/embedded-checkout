@@ -12,7 +12,8 @@ import axios from "axios";
 const CUSTOMER = "cus_Q25yMf9LcFBa0x";
 const PRICE = "price_1P1WzdGIhO2YPQ6Aeh8fS1L0";
 const CONTINENTAL_SHIPPING = "shr_1PG6I6GIhO2YPQ6AmiVqCj3Z";
-const AK_HI_SHIPPING = "shr_1PG6IgGIhO2YPQ6AqqW52EHU";
+const AK_HI_SHIPPING = "shr_1PHCKnGIhO2YPQ6APknsLBZS";
+const EXPEDITED_SHIPPING = "shr_1OqoEOGIhO2YPQ6AdzgXNlyZ";
 
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SK, {
@@ -23,7 +24,17 @@ const stripe = require("stripe")(process.env.STRIPE_SK, {
 const app = express();
 app.use(httpContext.middleware);
 app.use(bodyParser.json());
-app.use(express.static(path.join(__dirname, "../public")));
+app.use(
+  express.static(path.join(__dirname, "../public"), {
+    etag: true, // Just being explicit about the default.
+    lastModified: true, // Just being explicit about the default.
+    setHeaders: (res, path) => {
+      if (process.env.NODE_ENV === "development") {
+        res.setHeader("Cache-Control", "no-cache");
+      }
+    },
+  })
+);
 
 app.use((req, res, next) => {
   const requestId = crypto.randomBytes(4).toString("hex");
@@ -60,6 +71,9 @@ app.post("/checkout", async (req: Request<{}>, res) => {
       {
         shipping_rate: CONTINENTAL_SHIPPING,
       },
+      {
+        shipping_rate: EXPEDITED_SHIPPING,
+      },
     ],
     line_items: [
       {
@@ -72,13 +86,13 @@ app.post("/checkout", async (req: Request<{}>, res) => {
       allowed_countries: ["US"],
     },
     ui_mode: "embedded",
-    redirect_on_completion: "never"
+    redirect_on_completion: "never",
   });
   console.log(
     `${requestId}:${new Date().toISOString()}: finished stripe.checkout.sessions.create() from merchant server`
   );
 
-  res.json({ clientSecret: session.client_secret });
+  res.json({ clientSecret: session.client_secret, sessionId: session.id });
 });
 
 const requestCheckoutSession = async (
@@ -102,7 +116,7 @@ const requestCheckoutSession = async (
 };
 
 app.post(
-  "/setAddress",
+  "/setShipping",
   async (
     req: Request<{
       sessionId: string;
@@ -121,11 +135,13 @@ app.post(
       );
 
       const shippingRate =
-        address.state === "AK" || address.state === "HI"
+        address.state === "AK" ||
+        address.state === "HI"
           ? AK_HI_SHIPPING
           : CONTINENTAL_SHIPPING;
       const params = new URLSearchParams();
       params.append("shipping_options[0][shipping_rate]", shippingRate);
+      params.append("shipping_options[1][shipping_rate]", EXPEDITED_SHIPPING);
       const cs = await axios.post(checkoutSessionUrl, params.toString(), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
