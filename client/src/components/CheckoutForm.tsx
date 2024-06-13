@@ -7,7 +7,7 @@ import { loadStripe } from "@stripe/stripe-js/pure";
 import { setShipping } from "../helpers/serverHelper";
 import { Address } from "../types/address";
 
-const STRIPE_PK = "pk_test_ZgnfMB8YLrVcnzBUWhsUYb1g";
+const STRIPE_PK = "pk_test_51PQb5mDJyQiVNnrXICxV5H5edFoBkejRUlTTgDnNdcNbKNFsNaTkwUepUjOsZ5O73I8qh3yAimXinKZxlhc8RLxz00gZ0v5vlS";
 
 const stripe = loadStripe(STRIPE_PK, {
   betas: ["embedded_checkout_byol_beta_1"],

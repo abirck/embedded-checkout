@@ -9,11 +9,11 @@ import axios from "axios";
 // set things change. I should probably take in a customer ID from the frontend and add it to my debug panel
 // customer based in South Carolina (no tax): cus_OpvtuwflO7Q0ae
 // customer based in Washington (tax): cus_PDFSYCl9xNfGw0
-const CUSTOMER = "cus_NGwDLRLPPm40KZ";
-const PRICE = "price_1PQGZ2KsACNmJCh6lzPyp6FY";
-const CONTINENTAL_SHIPPING = "shr_1PQYphKsACNmJCh61EkqxcaL";
-const AK_HI_SHIPPING = "shr_1PQYoIKsACNmJCh6VTYymg17";
-const EXPEDITED_SHIPPING = "shr_1PQYqOKsACNmJCh6upwQmocr";
+const CUSTOMER = "cus_QHtzoVJ9fS2A8v";
+const PRICE = "price_1PQb6QDJyQiVNnrXzepf8AZc";
+const CONTINENTAL_SHIPPING = "shr_1PRLZYDJyQiVNnrXfXDY9xAL";
+const AK_HI_SHIPPING = "shr_1PRLa3DJyQiVNnrX8Pe4rNRt";
+const EXPEDITED_SHIPPING = "shr_1PRLaTDJyQiVNnrX3v8GnU6p";
 
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SK, {
