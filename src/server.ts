@@ -17,7 +17,7 @@ const EXPEDITED_SHIPPING = "shr_1PRLaTDJyQiVNnrX3v8GnU6p";
 
 require("dotenv").config();
 const stripe = require("stripe")(process.env.STRIPE_SK, {
-  apiVersion: "2022-11-15",
+  apiVersion: "2022-11-15; checkout_server_update_beta=v1",
 });
 
 // Initialize express app
@@ -87,6 +87,11 @@ app.post("/checkout", async (req: Request<{}>, res) => {
     },
     ui_mode: "embedded",
     redirect_on_completion: "never",
+    permissions: {
+      update: {
+        shipping_details: "server_only",
+      }
+    },
   });
   console.log(
     `${requestId}:${new Date().toISOString()}: finished stripe.checkout.sessions.create() from merchant server`
@@ -145,7 +150,7 @@ app.post(
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
           "Stripe-Version":
-            "2022-11-15;checkout_session_shipping_options_update_beta=v1",
+            "2022-11-15;checkout_server_update_beta=v1",
         },
         auth: {
           username: process.env.STRIPE_SK || "",
