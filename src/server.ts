@@ -139,6 +139,7 @@ app.post(
         `${requestId}:${new Date().toISOString()}: starting POST /v1/checkout/sessions/${sessionId} from merchant server`
       );
 
+      // shipping rate changes
       const shippingRate =
         address.state === "AK" || address.state === "HI"
           ? AK_HI_SHIPPING
@@ -146,6 +147,17 @@ app.post(
       const params = new URLSearchParams();
       params.append("shipping_options[0][shipping_rate]", shippingRate);
       params.append("shipping_options[1][shipping_rate]", EXPEDITED_SHIPPING);
+
+      // need to set shipping address from the server since we said it's server only updates
+      params.append("shipping_details[name]", "SERVER UPDATE WORKED");
+      // params.append("shipping_details[name]", address.name);
+      params.append("shipping_details[address][line1]", address.line1);
+      params.append("shipping_details[address][line2]", address.line2);
+      params.append("shipping_details[address][city]", address.city);
+      params.append("shipping_details[address][state]", address.state);
+      params.append("shipping_details[address][postal_code]", address.postal_code);
+      params.append("shipping_details[address][country]", address.country);
+
       const cs = await axios.post(checkoutSessionUrl, params.toString(), {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
